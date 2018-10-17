@@ -1,11 +1,12 @@
 let mobilenet;
-let classifier;
+let predictor;
 let video;
 let label ='';
-
-let ukeButton;
-let whistleButton;
+let slider;
 let trainButton;
+
+let addButton;
+
 
 function modelReady() {
   console.log('Model is ready!!!');
@@ -19,9 +20,9 @@ function gotResults(error, results) {
     console.error(error);
   } else {
     console.log(results);
-    label = results;
+    label = results
     let prob = results[0].probability;
-    classifier.classify(gotResults);
+    predictor.predict(gotResults);
 
   }
 }
@@ -43,7 +44,7 @@ function whileTraining(loss)
 {
   if(loss==null)
   {console.log('training complete');
-classifier.classify(gotResults);
+predictor.predict(gotResults);
 }
 else {
   {
@@ -62,22 +63,18 @@ function setup() {
 
   background(0);
   mobilenet = ml5.featureExtractor('MobileNet',video,modelReady);
-  classifier=mobilenet.classification(video,videoReady);
+  predictor=mobilenet.regression(video,videoReady);
 
-  ukeButton=createButton('ukulele');
-  ukeButton.mousePressed(function(){
-    classifier.addImage('ukulele');
-  });
+  slider = createSlider(0,1,0.5,0.01);
 
 
-  whistleButton=createButton('whistle');
-  whistleButton.mousePressed(function(){
-    classifier.addImage('whistle');
-  });
+  addButton=createButton('Add example Image');
+  addButton.mousePressed(function(){
+    predictor.addImage(slider.value());});
 
   trainButton=createButton('train');
   whistleButton.mousePressed(function(){
-    classifier.train(whileTraining);
+    predictor.train(whileTraining);
   });
 
 
